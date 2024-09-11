@@ -2,7 +2,23 @@
 
 try
 {
-    using Cowsay cowsay = new();
+    Cowsay cowsay = new();
+
+    cowsay.OutputDataReceived += (_, e) =>
+    {
+        if (!String.IsNullOrEmpty(e.Data))
+        {
+            Console.WriteLine(e.Data);
+        }
+    };
+
+    cowsay.ErrorDataReceived += (sender, e) =>
+    {
+        if (!String.IsNullOrEmpty(e.Data))
+        {
+            Console.WriteLine($"error: {e.Data}");
+        }
+    };
 
     Console.Write("-> Tell me what you want to say: ");
     string? message = Console.ReadLine();
@@ -13,8 +29,7 @@ try
         return;
     }
 
-    string cowsayResponse = cowsay.Say(message);
-    Console.WriteLine(cowsayResponse);
+    cowsay.Say(message);
 }
 catch (Win32Exception)
 {

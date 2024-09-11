@@ -3,6 +3,8 @@ using System.Diagnostics;
 class Cowsay : IDisposable
 {
     private Process _process;
+    public event DataReceivedEventHandler? OutputDataReceived;
+    public event DataReceivedEventHandler? ErrorDataReceived;
 
     public Cowsay()
     {
@@ -11,27 +13,29 @@ class Cowsay : IDisposable
             FileName = "/usr/games/cowsay",
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
+            RedirectStandardError = true,
+            UseShellExecute = false
         };
 
         _process = new()
         {
-            StartInfo = startInfo
+            StartInfo = startInfo,
         };
+
+        _process.OutputDataReceived += (sender, e) => OutputDataReceived?.Invoke(sender, e);
+        _process.ErrorDataReceived += (sender, e) => ErrorDataReceived?.Invoke(sender, e);
 
         _process.Start();
     }
 
-    public string Say(string message)
+    public void Say(string message)
     {
         _process.StandardInput.WriteLine(message);
         _process.StandardInput.Close();
 
-        string cowsayResponse = _process.StandardOutput.ReadToEnd();
+        _process.BeginOutputReadLine();
+        _process.BeginErrorReadLine();
         _process.WaitForExit();
-
-        return cowsayResponse;
     }
 
     public void Dispose()
