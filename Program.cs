@@ -12,7 +12,7 @@ try
         }
     };
 
-    cowsay.ErrorDataReceived += (sender, e) =>
+    cowsay.ErrorDataReceived += (_, e) =>
     {
         if (!String.IsNullOrEmpty(e.Data))
         {
