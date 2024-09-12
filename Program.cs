@@ -30,6 +30,10 @@ try
     }
 
     cowsay.Say(message);
+
+    // Make sure to wait for cowsay to emit a response, 
+    // since the reading of stdout, stderr is asynchronous.
+    cowsay.WaitForResponse();
 }
 catch (Win32Exception)
 {

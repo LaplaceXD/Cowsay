@@ -55,7 +55,13 @@ class Cowsay : IDisposable
     {
         _process.StandardInput.WriteLine(message);
         _process.StandardInput.Close();
+    }
 
+    /// <summary>
+    /// Waits for Cowsay to send a response.
+    /// </summary>
+    public void WaitForResponse()
+    {
         _process.WaitForExit();
     }
 
