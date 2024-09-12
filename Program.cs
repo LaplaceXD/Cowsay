@@ -2,24 +2,6 @@
 
 try
 {
-    Cowsay cowsay = new();
-
-    cowsay.OutputDataReceived += (_, e) =>
-    {
-        if (!String.IsNullOrEmpty(e.Data))
-        {
-            Console.WriteLine(e.Data);
-        }
-    };
-
-    cowsay.ErrorDataReceived += (_, e) =>
-    {
-        if (!String.IsNullOrEmpty(e.Data))
-        {
-            Console.WriteLine($"error: {e.Data}");
-        }
-    };
-
     Console.Write("-> Tell me what you want to say: ");
     string? message = Console.ReadLine();
 
@@ -29,11 +11,8 @@ try
         return;
     }
 
-    cowsay.Say(message);
-
-    // Make sure to wait for cowsay to emit a response, 
-    // since the reading of stdout, stderr is asynchronous.
-    cowsay.WaitForResponse();
+    string response = Cowsay.Say(message);
+    Console.WriteLine(response);
 }
 catch (Win32Exception)
 {

@@ -3,73 +3,45 @@ using System.Diagnostics;
 /// <summary>
 /// Cowsay is a program that generates ASCII pictures of a cow with a message.
 /// </summary>
-class Cowsay : IDisposable
+class Cowsay
 {
-    private Process _process;
-
     /// <summary>
-    /// Event handler for receiving data from Cowsay.
-    /// </summary>
-    public event DataReceivedEventHandler? OutputDataReceived;
-
-    /// <summary>
-    /// Event handler for receiving error data from Cowsay.
-    /// </summary>
-    public event DataReceivedEventHandler? ErrorDataReceived;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Cowsay"/> class.
+    /// Generates a cow with a message.
     /// </summary>
     ///
-    /// <exception cref="Win32Exception">The Cowsay program is not installed.</exception>
-    public Cowsay()
+    /// <param name="message">The message to display.</param>
+    /// <returns>The ASCII picture of a cow with the message.</returns>
+    ///
+    /// <exception cref="Exception">If cowsay fails to generate the cow.</exception>
+    public static string Say(string message)
     {
         ProcessStartInfo startInfo = new()
         {
             FileName = "/usr/games/cowsay",
+            RedirectStandardError = true,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false
+            UseShellExecute = false,
         };
 
-        _process = new()
+        using Process process = new()
         {
             StartInfo = startInfo,
         };
 
-        _process.OutputDataReceived += (_, e) => OutputDataReceived?.Invoke(this, e);
-        _process.ErrorDataReceived += (_, e) => ErrorDataReceived?.Invoke(this, e);
+        process.Start();
+        process.StandardInput.WriteLine(message);
+        process.StandardInput.Close();
 
-        _process.Start();
-        _process.BeginOutputReadLine();
-        _process.BeginErrorReadLine();
-    }
+        string output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
 
-    /// <summary>
-    /// Say a message with Cowsay, which generates an ASCII picture of a cow with the message.
-    /// </summary>
-    ///
-    /// <param name="message">The message to say.</param>
-    public void Say(string message)
-    {
-        _process.StandardInput.WriteLine(message);
-        _process.StandardInput.Close();
-    }
+        if (process.ExitCode != 0)
+        {
+            string error = process.StandardError.ReadToEnd();
+            throw new Exception(error);
+        }
 
-    /// <summary>
-    /// Waits for Cowsay to send a response.
-    /// </summary>
-    public void WaitForResponse()
-    {
-        _process.WaitForExit();
-    }
-
-    /// <summary>
-    /// Releases all resources used by the <see cref="Cowsay"/>.
-    /// </summary>
-    public void Dispose()
-    {
-        _process.Dispose();
+        return output;
     }
 }
