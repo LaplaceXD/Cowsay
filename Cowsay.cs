@@ -38,10 +38,12 @@ class Cowsay : IDisposable
             StartInfo = startInfo,
         };
 
-        _process.OutputDataReceived += (sender, e) => OutputDataReceived?.Invoke(sender, e);
-        _process.ErrorDataReceived += (sender, e) => ErrorDataReceived?.Invoke(sender, e);
+        _process.OutputDataReceived += (_, e) => OutputDataReceived?.Invoke(this, e);
+        _process.ErrorDataReceived += (_, e) => ErrorDataReceived?.Invoke(this, e);
 
         _process.Start();
+        _process.BeginOutputReadLine();
+        _process.BeginErrorReadLine();
     }
 
     /// <summary>
@@ -54,8 +56,6 @@ class Cowsay : IDisposable
         _process.StandardInput.WriteLine(message);
         _process.StandardInput.Close();
 
-        _process.BeginOutputReadLine();
-        _process.BeginErrorReadLine();
         _process.WaitForExit();
     }
 
