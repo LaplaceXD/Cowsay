@@ -3,7 +3,7 @@ using System.Diagnostics;
 /// <summary>
 /// Cowsay is a program that generates ASCII pictures of a cow with a message.
 /// </summary>
-class Cowsay
+static class Cowsay
 {
     /// <summary>
     /// Generates a cow with a message.
