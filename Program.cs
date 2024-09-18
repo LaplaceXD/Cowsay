@@ -3,7 +3,7 @@
 try
 {
     Console.Write("-> Tell me what you want to say: ");
-    string? message = Console.ReadLine();
+    var message = Console.ReadLine();
 
     if (string.IsNullOrEmpty(message))
     {
@@ -11,7 +11,7 @@ try
         return;
     }
 
-    string response = Cowsay.Say(message);
+    var response = Cow.Say(message);
     Console.WriteLine(response);
 }
 catch (Win32Exception)
